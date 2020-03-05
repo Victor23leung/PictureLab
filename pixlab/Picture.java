@@ -234,7 +234,6 @@ public class Picture extends SimplePicture
         count++;
       }
     }
-    
     System.out.println(count);
   }
   
@@ -272,6 +271,29 @@ public class Picture extends SimplePicture
     }
   }
   
+    public void mirrorGull()
+  {
+    int mirrorPoint = 342;
+    //int mirrorPointLeft = 276;
+    Pixel leftPixel = null;
+    Pixel rightPixel = null;
+    Pixel[][] pixels = this.getPixels2D();
+    
+    // loop through the rows
+    for (int row = 230; row < 325; row++)
+    {
+      // loop from 13 to just before the mirror point
+      for (int col = 240; col < mirrorPoint; col++)
+      {
+        
+        leftPixel = pixels[row][col];      
+        rightPixel = pixels[row]                       
+                         [mirrorPoint - col + mirrorPoint];
+        rightPixel.setColor(leftPixel.getColor());
+      }
+    }
+  }
+  
   /** copy from the passed fromPic to the
     * specified startRow and startCol in the
     * current picture
@@ -281,7 +303,31 @@ public class Picture extends SimplePicture
     */
   public void copy(Picture fromPic, 
                  int startRow, int startCol)
-  {
+   {
+    Pixel fromPixel = null;
+    Pixel toPixel = null;
+    Pixel[][] toPixels = this.getPixels2D();
+    Pixel[][] fromPixels = fromPic.getPixels2D();
+    for (int fromRow = 0, toRow = startRow; 
+         fromRow < fromPixels.length &&
+         toRow < toPixels.length; 
+         fromRow++, toRow++)
+    {
+      for (int fromCol = 0, toCol = startCol; 
+           fromCol < fromPixels[0].length &&
+           toCol < toPixels[0].length;  
+           fromCol++, toCol++)
+      {
+        fromPixel = fromPixels[fromRow][fromCol];
+        toPixel = toPixels[toRow][toCol];
+        toPixel.setColor(fromPixel.getColor());
+      }
+    }   
+  }
+  
+  public void copy2(Picture fromPic, 
+                 int startRow, int startCol, int endRow, int EndCol)
+   {
     Pixel fromPixel = null;
     Pixel toPixel = null;
     Pixel[][] toPixels = this.getPixels2D();
@@ -320,6 +366,24 @@ public class Picture extends SimplePicture
     this.write("collage.jpg");
   }
   
+  public void myCollage()
+  {
+    Picture robot1 = new Picture("robot.jpg");
+    Picture robot2 = new Picture("robot.jpg");
+    this.copy(robot1,0,0);
+    this.copy(robot2,100,0);
+    this.copy(robot1,200,0);
+    Picture robotNoBlue = new Picture(robot2);
+    robotNoBlue.zeroBlue();
+    Picture robotOnlyBlue = new Picture(robot2);
+    robotOnlyBlue.keepOnlyBlue();
+    this.copy(robotNoBlue,300,0);
+    this.copy(robot1,400,0);
+    this.copy(robot2,500,0);
+    this.mirrorVertical();
+    this.mirrorHorizontal();
+    this.write("collage.jpg");
+  }
   
   /** Method to show large changes in color 
     * @param edgeDist the distance for finding edges
